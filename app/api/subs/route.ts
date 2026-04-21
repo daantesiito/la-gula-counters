@@ -1,56 +1,46 @@
 // SSE endpoint — streams SubState to all connected clients every 1000 ms.
-// Uses Edge Runtime for long-lived streaming responses on Vercel.
+// Node.js runtime (not Edge) for reliable streaming in dev and prod.
 
+import { NextRequest } from 'next/server'
 import { getSubState } from '@/lib/kv'
 
-export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const encoder = new TextEncoder()
-  let closed = false
+  let intervalId: ReturnType<typeof setInterval> | undefined
 
   const stream = new ReadableStream({
-    async start(controller) {
-      try {
-        // Send retry hint + initial state immediately on connect
-        const initial = await getSubState()
-        controller.enqueue(
-          encoder.encode(`retry: 3000\n\ndata: ${JSON.stringify(initial)}\n\n`)
-        )
-
-        // Poll KV every 1000 ms and push current state
-        while (!closed) {
-          await new Promise<void>((resolve) => setTimeout(resolve, 1000))
-          if (closed) break
-
+    start(controller) {
+      const send = async () => {
+        try {
           const state = await getSubState()
           controller.enqueue(encoder.encode(`data: ${JSON.stringify(state)}\n\n`))
-        }
-      } catch {
-        // Client disconnected or stream errored — exit cleanly
-      } finally {
-        try {
-          controller.close()
         } catch {
-          // already closed
+          clearInterval(intervalId)
+          try { controller.close() } catch { /* already closed */ }
         }
       }
+
+      controller.enqueue(encoder.encode('retry: 3000\n\n'))
+      send()
+      intervalId = setInterval(send, 1000)
     },
     cancel() {
-      closed = true
+      clearInterval(intervalId)
     },
   })
 
   request.signal.addEventListener('abort', () => {
-    closed = true
+    clearInterval(intervalId)
   })
 
   return new Response(stream, {
     headers: {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
+      'Content-Type': 'text/event-stream; charset=utf-8',
+      'Cache-Control': 'no-cache, no-transform',
       'Connection': 'keep-alive',
+      'X-Accel-Buffering': 'no',
     },
   })
 }

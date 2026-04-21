@@ -96,6 +96,7 @@ export default function ControlPanel() {
   const isRunning = timer.status === 'running'
   const isPaused = timer.status === 'paused'
   const isIdle = timer.status === 'idle'
+  const hasNoTime = timer.remainingMs === 0 && isIdle
 
   // ---------------------------------------------------------------------------
   // Handlers
@@ -159,11 +160,18 @@ export default function ControlPanel() {
           </span>
         </div>
 
+        {/* Hint cuando no hay tiempo cargado */}
+        {hasNoTime && (
+          <p className="text-center text-yellow-500 text-xs mb-4">
+            ↓ Agregá segundos abajo antes de iniciar
+          </p>
+        )}
+
         {/* Primary action buttons */}
         <div className="flex flex-wrap gap-3 justify-center mb-6">
           <button
             onClick={() => timerControl({ action: 'start' })}
-            disabled={isRunning}
+            disabled={isRunning || hasNoTime}
             className="px-6 py-2 rounded-lg font-bold uppercase tracking-wider text-sm
               bg-green-700 hover:bg-green-600 disabled:opacity-30 disabled:cursor-not-allowed
               transition-colors"

@@ -1,4 +1,11 @@
-import { kv } from '@vercel/kv'
+import { Redis } from '@upstash/redis'
+
+// Upstash Redis client — env vars injected automatically when you connect
+// an Upstash store from the Vercel marketplace.
+const redis = new Redis({
+  url: process.env.KV_REST_API_URL!,
+  token: process.env.KV_REST_API_TOKEN!,
+})
 
 // ---------------------------------------------------------------------------
 // Types
@@ -50,12 +57,12 @@ const SUBS_KEY = 'subs:state'
 // ---------------------------------------------------------------------------
 
 export async function getTimerState(): Promise<TimerState> {
-  const state = await kv.get<TimerState>(TIMER_KEY)
+  const state = await redis.get<TimerState>(TIMER_KEY)
   return state ?? DEFAULT_TIMER_STATE
 }
 
 export async function setTimerState(state: TimerState): Promise<void> {
-  await kv.set(TIMER_KEY, state)
+  await redis.set(TIMER_KEY, state)
 }
 
 // ---------------------------------------------------------------------------
@@ -63,10 +70,10 @@ export async function setTimerState(state: TimerState): Promise<void> {
 // ---------------------------------------------------------------------------
 
 export async function getSubState(): Promise<SubState> {
-  const state = await kv.get<SubState>(SUBS_KEY)
+  const state = await redis.get<SubState>(SUBS_KEY)
   return state ?? DEFAULT_SUB_STATE
 }
 
 export async function setSubState(state: SubState): Promise<void> {
-  await kv.set(SUBS_KEY, state)
+  await redis.set(SUBS_KEY, state)
 }
