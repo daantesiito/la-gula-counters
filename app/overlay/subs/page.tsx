@@ -33,7 +33,7 @@ export default function SubsOverlay() {
       style={{
         width: '100vw',
         height: '100vh',
-        background: '#000',
+        background: 'transparent',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',

@@ -6,7 +6,7 @@ export default function OverlayLayout({ children }: { children: React.ReactNode 
       <style>{`
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html, body {
-          background: #000;
+          background: transparent;
           overflow: hidden;
           width: 100%;
           height: 100%;

@@ -79,7 +79,7 @@ export default function TimerOverlay() {
         style={{
           width: '100vw',
           height: '100vh',
-          background: '#000',
+          background: 'transparent',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
