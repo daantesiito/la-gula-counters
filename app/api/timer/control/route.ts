@@ -1,5 +1,6 @@
-// POST endpoint — mutates timer state in KV.
-// Accepted actions: start | pause | resume | add | subtract | reset
+// POST endpoint — mutates timer state en KV.
+// El timer es un cronómetro que sube desde 00:00 sin límite.
+// Acciones: start | pause | resume | add | subtract | reset
 
 import { getTimerState, setTimerState } from '@/lib/kv'
 import { NextRequest, NextResponse } from 'next/server'
@@ -22,12 +23,13 @@ export async function POST(request: NextRequest) {
     case 'start':
       state.status = 'running'
       state.startedAt = Date.now()
+      state.elapsedMs = 0
       break
 
     case 'pause':
       if (state.status === 'running' && state.startedAt !== null) {
-        // Freeze the remaining time so it reflects elapsed duration
-        state.remainingMs = Math.max(0, state.remainingMs - (Date.now() - state.startedAt))
+        // Acumula el tiempo transcurrido hasta ahora
+        state.elapsedMs = state.elapsedMs + (Date.now() - state.startedAt)
       }
       state.status = 'paused'
       state.startedAt = null
@@ -39,16 +41,27 @@ export async function POST(request: NextRequest) {
       break
 
     case 'add':
-      state.remainingMs += body.seconds * 1000
+      // Suma segundos al tiempo acumulado (salta el cronómetro hacia adelante)
+      state.elapsedMs += body.seconds * 1000
       break
 
-    case 'subtract':
-      state.remainingMs = Math.max(0, state.remainingMs - body.seconds * 1000)
+    case 'subtract': {
+      // Resta segundos del tiempo total actual y resetea el punto de inicio
+      const currentTotal =
+        state.status === 'running' && state.startedAt !== null
+          ? state.elapsedMs + (Date.now() - state.startedAt)
+          : state.elapsedMs
+      const newTotal = Math.max(0, currentTotal - body.seconds * 1000)
+      state.elapsedMs = newTotal
+      if (state.status === 'running') {
+        state.startedAt = Date.now() // resetea el punto de inicio para que no haya salto
+      }
       break
+    }
 
     case 'reset':
       state.status = 'idle'
-      state.remainingMs = 0
+      state.elapsedMs = 0
       state.startedAt = null
       break
 

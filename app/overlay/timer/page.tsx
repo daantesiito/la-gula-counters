@@ -29,9 +29,9 @@ function formatTime(ms: number): string {
 
 function getDisplayMs(state: TimerState): number {
   if (state.status === 'running' && state.startedAt !== null) {
-    return Math.max(0, state.remainingMs - (Date.now() - state.startedAt))
+    return state.elapsedMs + (Date.now() - state.startedAt)
   }
-  return Math.max(0, state.remainingMs)
+  return state.elapsedMs
 }
 
 // ---------------------------------------------------------------------------
@@ -41,7 +41,7 @@ function getDisplayMs(state: TimerState): number {
 export default function TimerOverlay() {
   const [timerState, setTimerState] = useState<TimerState>({
     status: 'idle',
-    remainingMs: 0,
+    elapsedMs: 0,
     startedAt: null,
   })
   // Dummy tick counter — forces a re-render every 100 ms so the countdown

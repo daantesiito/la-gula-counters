@@ -23,9 +23,9 @@ function formatTime(ms: number): string {
 
 function getDisplayMs(state: TimerState): number {
   if (state.status === 'running' && state.startedAt !== null) {
-    return Math.max(0, state.remainingMs - (Date.now() - state.startedAt))
+    return state.elapsedMs + (Date.now() - state.startedAt)
   }
-  return Math.max(0, state.remainingMs)
+  return state.elapsedMs
 }
 
 // ---------------------------------------------------------------------------
@@ -52,7 +52,7 @@ async function subsControl(body: object) {
 // Component
 // ---------------------------------------------------------------------------
 
-const DEFAULT_TIMER: TimerState = { status: 'idle', remainingMs: 0, startedAt: null }
+const DEFAULT_TIMER: TimerState = { status: 'idle', elapsedMs: 0, startedAt: null }
 const DEFAULT_SUBS: SubState = {
   total: 0,
   byChannel: { mortedor: 0, nanoide: 0, melianvalen: 0 },
@@ -96,7 +96,6 @@ export default function ControlPanel() {
   const isRunning = timer.status === 'running'
   const isPaused = timer.status === 'paused'
   const isIdle = timer.status === 'idle'
-  const hasNoTime = timer.remainingMs === 0 && isIdle
 
   // ---------------------------------------------------------------------------
   // Handlers
@@ -160,18 +159,11 @@ export default function ControlPanel() {
           </span>
         </div>
 
-        {/* Hint cuando no hay tiempo cargado */}
-        {hasNoTime && (
-          <p className="text-center text-yellow-500 text-xs mb-4">
-            ↓ Agregá segundos abajo antes de iniciar
-          </p>
-        )}
-
         {/* Primary action buttons */}
         <div className="flex flex-wrap gap-3 justify-center mb-6">
           <button
             onClick={() => timerControl({ action: 'start' })}
-            disabled={isRunning || hasNoTime}
+            disabled={isRunning}
             className="px-6 py-2 rounded-lg font-bold uppercase tracking-wider text-sm
               bg-green-700 hover:bg-green-600 disabled:opacity-30 disabled:cursor-not-allowed
               transition-colors"
@@ -253,9 +245,6 @@ export default function ControlPanel() {
         {/* Total + breakdown */}
         <div className="flex flex-col items-center mb-6">
           <span className="font-mono text-8xl font-bold">{subs.total}</span>
-          <span className="mt-2 text-lg font-mono text-gray-400">
-            Mort:&nbsp;{subs.byChannel.mortedor}&nbsp;|&nbsp;Nano:&nbsp;{subs.byChannel.nanoide}&nbsp;|&nbsp;Meli:&nbsp;{subs.byChannel.melianvalen}
-          </span>
         </div>
 
         {/* Reset */}

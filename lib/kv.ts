@@ -13,8 +13,8 @@ const redis = new Redis({
 
 export type TimerState = {
   status: 'idle' | 'running' | 'paused'
-  remainingMs: number   // ms remaining as of the last start/resume
-  startedAt: number | null  // Date.now() when last started/resumed
+  elapsedMs: number     // ms acumulados al momento del último pause
+  startedAt: number | null  // Date.now() cuando se inició/resumió
 }
 
 export type SubState = {
@@ -32,7 +32,7 @@ export type SubState = {
 
 export const DEFAULT_TIMER_STATE: TimerState = {
   status: 'idle',
-  remainingMs: 0,
+  elapsedMs: 0,
   startedAt: null,
 }
 
