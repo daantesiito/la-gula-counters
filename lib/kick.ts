@@ -82,7 +82,11 @@ export async function subscribeWebhook(
     },
     body: JSON.stringify({
       broadcaster_user_id: broadcasterId,
-      events: [{ name: 'channel.subscription.created', version: 1 }],
+      events: [
+        { name: 'channel.subscription.new', version: 1 },
+        { name: 'channel.subscription.gifts', version: 1 },
+        { name: 'channel.subscription.renewal', version: 1 },
+      ],
       method: 'webhook',
     }),
   })
