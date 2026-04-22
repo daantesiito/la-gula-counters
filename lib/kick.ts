@@ -41,9 +41,8 @@ export async function getKickChannel(
   slug: string,
   token: string
 ): Promise<KickChannel> {
-  // Try fetching by broadcaster_username query param
   const res = await fetch(
-    `${KICK_API_BASE}/channels?broadcaster_username=${encodeURIComponent(slug)}`,
+    `${KICK_API_BASE}/channels?slug=${encodeURIComponent(slug)}`,
     { headers: { Authorization: `Bearer ${token}` } }
   )
 
