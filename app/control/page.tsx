@@ -245,6 +245,24 @@ export default function ControlPanel() {
         {/* Total + breakdown */}
         <div className="flex flex-col items-center mb-6">
           <span className="font-mono text-8xl font-bold">{subs.total}</span>
+          <div className="flex gap-6 mt-4 text-center">
+            {(
+              [
+                { label: 'Mortedor', key: 'mortedor' },
+                { label: 'Nanoide', key: 'nanoide' },
+                { label: 'Melianvalen', key: 'melianvalen' },
+              ] as const
+            ).map(({ label, key }) => (
+              <div key={key} className="flex flex-col items-center">
+                <span className="font-mono text-4xl font-bold text-purple-400">
+                  {subs.byChannel[key]}
+                </span>
+                <span className="text-xs uppercase tracking-widest text-gray-500 mt-1">
+                  {label}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Reset */}
