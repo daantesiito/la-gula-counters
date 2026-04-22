@@ -132,14 +132,14 @@ export default function ControlPanel() {
   return (
     <div className="min-h-screen bg-gray-950 text-white p-6 md:p-10">
       <h1 className="text-2xl font-bold text-center mb-8 tracking-widest uppercase text-gray-300">
-        La Gula — Panel de Control
+        Contadores Panel de Control
       </h1>
 
       {/* ------------------------------------------------------------------ */}
       {/* TIMER SECTION                                                        */}
       {/* ------------------------------------------------------------------ */}
       <section className="bg-gray-900 rounded-2xl p-6 mb-6 shadow-xl">
-        <h2 className="text-xs uppercase tracking-widest text-gray-500 mb-4">Temporizador</h2>
+        <h2 className="text-xs uppercase tracking-widest text-gray-500 mb-4">Timer</h2>
 
         {/* Live countdown */}
         <div className="flex flex-col items-center mb-6">
@@ -240,7 +240,7 @@ export default function ControlPanel() {
       {/* SUBS SECTION                                                         */}
       {/* ------------------------------------------------------------------ */}
       <section className="bg-gray-900 rounded-2xl p-6 shadow-xl">
-        <h2 className="text-xs uppercase tracking-widest text-gray-500 mb-4">Suscripciones</h2>
+        <h2 className="text-xs uppercase tracking-widest text-gray-500 mb-4">Subs</h2>
 
         {/* Total + breakdown */}
         <div className="flex flex-col items-center mb-6">

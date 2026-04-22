@@ -90,14 +90,14 @@ export default function TimerOverlay() {
             className="blink"
             style={{
               color: '#fff',
-              fontSize: '72px',
+              fontSize: '90px',
               fontWeight: 700,
-              fontFamily: "'Courier New', Courier, monospace",
-              letterSpacing: '0.08em',
+              fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+              letterSpacing: '0.05em',
               lineHeight: 1,
             }}
           >
-            PAUSADO
+            {formatTime(displayMs)}
           </span>
         ) : (
           <span
@@ -105,7 +105,7 @@ export default function TimerOverlay() {
               color: '#fff',
               fontSize: '90px',
               fontWeight: 700,
-              fontFamily: "'Courier New', Courier, monospace",
+              fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
               letterSpacing: '0.05em',
               lineHeight: 1,
             }}

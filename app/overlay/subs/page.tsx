@@ -47,7 +47,7 @@ export default function SubsOverlay() {
           color: '#fff',
           fontSize: '96px',
           fontWeight: 700,
-          fontFamily: "'Courier New', Courier, monospace",
+          fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
           lineHeight: 1,
         }}
       >
@@ -59,7 +59,7 @@ export default function SubsOverlay() {
         style={{
           color: '#bbb',
           fontSize: '26px',
-          fontFamily: "'Courier New', Courier, monospace",
+          fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
           letterSpacing: '0.03em',
         }}
       >
