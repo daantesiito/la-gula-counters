@@ -24,14 +24,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const webhookUrl = process.env.KICK_WEBHOOK_URL
-  if (!webhookUrl) {
-    return NextResponse.json(
-      { error: 'KICK_WEBHOOK_URL env var not set (e.g. https://tu-dominio.vercel.app/api/subs/webhook)' },
-      { status: 500 }
-    )
-  }
-
   let token: string
   try {
     token = await getKickAccessToken()
@@ -47,7 +39,6 @@ export async function GET(request: NextRequest) {
       const result = await subscribeWebhook(
         channel.broadcaster_user_id,
         slug,
-        webhookUrl,
         token
       )
       results.push({ ok: result.status < 300, ...result })

@@ -72,10 +72,9 @@ export type WebhookSubscribeResult = {
 export async function subscribeWebhook(
   broadcasterId: number,
   slug: string,
-  webhookUrl: string,
   token: string
 ): Promise<WebhookSubscribeResult> {
-  const res = await fetch(`${KICK_API_BASE}/webhooks`, {
+  const res = await fetch(`${KICK_API_BASE}/events/subscriptions`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -84,8 +83,7 @@ export async function subscribeWebhook(
     body: JSON.stringify({
       broadcaster_user_id: broadcasterId,
       events: [{ name: 'channel.subscription.created', version: 1 }],
-      url: webhookUrl,
-      // method: 'webhook', // uncomment if Kick requires this field
+      method: 'webhook',
     }),
   })
 
