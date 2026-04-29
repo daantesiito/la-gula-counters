@@ -63,6 +63,7 @@ export default function SubsOverlay() {
           letterSpacing: '0.03em',
         }}
       >
+        {byChannel.mortedor} · {byChannel.nanoide} · {byChannel.melianvalen}
       </span>
     </div>
   )

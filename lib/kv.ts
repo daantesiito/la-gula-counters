@@ -66,12 +66,49 @@ export async function setTimerState(state: TimerState): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
+// Challenge timer
+// ---------------------------------------------------------------------------
+
+export type ChallengeTimerState = {
+  status: 'idle' | 'running' | 'paused' | 'finished'
+  totalMs: number
+  remainingMs: number
+  startedAt: number | null
+}
+
+export const DEFAULT_CHALLENGE_STATE: ChallengeTimerState = {
+  status: 'idle',
+  totalMs: 0,
+  remainingMs: 0,
+  startedAt: null,
+}
+
+const CHALLENGE_KEY = 'challenge:state'
+
+export async function getChallengeState(): Promise<ChallengeTimerState> {
+  const state = await redis.get<ChallengeTimerState>(CHALLENGE_KEY)
+  return state ?? DEFAULT_CHALLENGE_STATE
+}
+
+export async function setChallengeState(state: ChallengeTimerState): Promise<void> {
+  await redis.set(CHALLENGE_KEY, state)
+}
+
+// ---------------------------------------------------------------------------
 // Sub counter helpers
 // ---------------------------------------------------------------------------
 
 export async function getSubState(): Promise<SubState> {
   const state = await redis.get<SubState>(SUBS_KEY)
-  return state ?? DEFAULT_SUB_STATE
+  if (!state) return { ...DEFAULT_SUB_STATE, byChannel: { ...DEFAULT_SUB_STATE.byChannel } }
+  return {
+    total: Number(state.total) || 0,
+    byChannel: {
+      mortedor: Number(state.byChannel?.mortedor) || 0,
+      nanoide: Number(state.byChannel?.nanoide) || 0,
+      melianvalen: Number(state.byChannel?.melianvalen) || 0,
+    },
+  }
 }
 
 export async function setSubState(state: SubState): Promise<void> {
