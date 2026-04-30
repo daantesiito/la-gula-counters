@@ -95,6 +95,27 @@ export async function setChallengeState(state: ChallengeTimerState): Promise<voi
 }
 
 // ---------------------------------------------------------------------------
+// Simple counter
+// ---------------------------------------------------------------------------
+
+export type CounterState = {
+  value: number
+}
+
+export const DEFAULT_COUNTER_STATE: CounterState = { value: 0 }
+
+const COUNTER_KEY = 'counter:state'
+
+export async function getCounterState(): Promise<CounterState> {
+  const state = await redis.get<CounterState>(COUNTER_KEY)
+  return state ?? { ...DEFAULT_COUNTER_STATE }
+}
+
+export async function setCounterState(state: CounterState): Promise<void> {
+  await redis.set(COUNTER_KEY, state)
+}
+
+// ---------------------------------------------------------------------------
 // Sub counter helpers
 // ---------------------------------------------------------------------------
 

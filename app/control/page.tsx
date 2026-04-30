@@ -4,7 +4,7 @@
 // No authentication required. Keep this URL private.
 
 import { useEffect, useRef, useState } from 'react'
-import type { ChallengeTimerState, SubState, TimerState } from '@/lib/kv'
+import type { ChallengeTimerState, CounterState, SubState, TimerState } from '@/lib/kv'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -63,6 +63,14 @@ async function subsControl(body: object) {
   })
 }
 
+async function counterControl(body: object) {
+  await fetch('/api/counter/control', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+}
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -78,11 +86,13 @@ const DEFAULT_SUBS: SubState = {
   total: 0,
   byChannel: { mortedor: 0, nanoide: 0, melianvalen: 0 },
 }
+const DEFAULT_COUNTER: CounterState = { value: 0 }
 
 export default function ControlPanel() {
   const [timer, setTimer] = useState<TimerState>(DEFAULT_TIMER)
   const [challenge, setChallenge] = useState<ChallengeTimerState>(DEFAULT_CHALLENGE)
   const [subs, setSubs] = useState<SubState>(DEFAULT_SUBS)
+  const [counter, setCounter] = useState<CounterState>(DEFAULT_COUNTER)
   const [, setTick] = useState(0)
 
   // Timer adjustment refs
@@ -115,6 +125,13 @@ export default function ControlPanel() {
   useEffect(() => {
     const es = new EventSource('/api/subs')
     es.onmessage = (e: MessageEvent<string>) => setSubs(JSON.parse(e.data))
+    return () => es.close()
+  }, [])
+
+  // SSE — counter
+  useEffect(() => {
+    const es = new EventSource('/api/counter')
+    es.onmessage = (e: MessageEvent<string>) => setCounter(JSON.parse(e.data))
     return () => es.close()
   }, [])
 
@@ -432,6 +449,42 @@ export default function ControlPanel() {
         </div>
       </section>
 
+      {/* ------------------------------------------------------------------ */}
+      {/* COUNTER SECTION                                                      */}
+      {/* ------------------------------------------------------------------ */}
+      <section className="bg-gray-900 rounded-2xl p-6 shadow-xl mt-6">
+        <h2 className="text-xs uppercase tracking-widest text-gray-500 mb-4">Contador MUERTES</h2>
+
+        <div className="flex flex-col items-center mb-6">
+          <span className="font-mono text-8xl font-bold">{counter.value}</span>
+        </div>
+
+        <div className="flex gap-4 justify-center mb-4">
+          <button
+            onClick={() => counterControl({ action: 'decrement' })}
+            className="w-16 h-16 rounded-xl text-3xl font-bold bg-red-900 hover:bg-red-800 transition-colors"
+          >
+            −
+          </button>
+          <button
+            onClick={() => counterControl({ action: 'increment' })}
+            className="w-16 h-16 rounded-xl text-3xl font-bold bg-green-800 hover:bg-green-700 transition-colors"
+          >
+            +
+          </button>
+        </div>
+
+        <div className="flex justify-center">
+          <button
+            onClick={() => counterControl({ action: 'reset' })}
+            className="px-6 py-2 rounded-lg font-bold uppercase tracking-wider text-sm
+              bg-red-900 hover:bg-red-800 transition-colors"
+          >
+            Reset
+          </button>
+        </div>
+      </section>
+
       {/* Quick links */}
       <footer className="mt-8 flex flex-wrap gap-4 justify-center text-xs text-gray-600">
         <a href="/overlay/timer" target="_blank" className="hover:text-gray-400 transition-colors">
@@ -442,6 +495,9 @@ export default function ControlPanel() {
         </a>
         <a href="/overlay/subs" target="_blank" className="hover:text-gray-400 transition-colors">
           ↗ Overlay Subs
+        </a>
+        <a href="/overlay/counter" target="_blank" className="hover:text-gray-400 transition-colors">
+          ↗ Overlay Contador
         </a>
       </footer>
     </div>
